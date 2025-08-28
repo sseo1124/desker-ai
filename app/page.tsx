@@ -16,6 +16,7 @@ const LandingPage = () => {
             떠나는 고객을 붙잡아 매출로 전환하세요
           </span>
         </div>
+        <div className="pb-10"></div>
         <div className="flex justify-center items-center rounded-lg bg-brown-400 p-0.5 ">
           <Image
             src="/information-section-image.png"
