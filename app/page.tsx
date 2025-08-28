@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const LandingPage = () => {
   return (
@@ -17,6 +18,20 @@ const LandingPage = () => {
           </span>
         </div>
         <div className="pb-10"></div>
+        <div className="flex justify-center items-center gap-10 pb-10">
+          <Link
+            href="/login"
+            className="flex items-center gap-5 self-start rounded-lg bg-brown-300 px-7 py-3.5 text-base md:px-8 md:py-4 md:text-lg lg:px-10 lg:py-5 lg:text-xl font-medium text-black transition-colors hover:bg-brown-900 hover:text-white"
+          >
+            <span>로그인 하기</span>
+          </Link>
+          <Link
+            href="/demo"
+            className="flex items-center gap-5 self-start rounded-lg bg-brown-700 px-7 py-3.5 text-base md:px-8 md:py-4 md:text-lg lg:px-10 lg:py-5 lg:text-xl font-medium text-white transition-colors hover:bg-brown-200 hover:text-black"
+          >
+            <span>무료로 체험하기</span>
+          </Link>
+        </div>
         <div className="flex justify-center items-center rounded-lg bg-brown-400 p-0.5 ">
           <Image
             src="/information-section-image.png"
