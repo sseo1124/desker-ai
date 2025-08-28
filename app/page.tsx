@@ -10,6 +10,7 @@ const LandingPage = () => {
           width={150}
           height={150}
           alt="Desker Logo"
+          priority
         />
         <div className="flex justify-center items-center -mt-2 md:-mt-3 lg:-mt-4">
           <span className="block font-bold text-4xl text-center">
@@ -38,6 +39,7 @@ const LandingPage = () => {
             width={1280}
             height={853}
             alt="Landing Information Section Image"
+            priority
           />
         </div>
       </div>
