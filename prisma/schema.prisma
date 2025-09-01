@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
 // --- ENUM 타입 정의 ---
@@ -34,76 +34,79 @@ enum INQUIRY_STATUS {
 
 // --- 테이블 모델 정의 ---
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  password_hash String
-  phone_number  String
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  phoneNumber  String   @map("phone_number")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-  chatbots      Chatbot[]
+  chatbots     Chatbot[]
 }
 
 model Chatbot {
-  id                   Int                 @id @default(autoincrement())
-  user_id              Int
-  name                 String              @db.VarChar(120)
-  role_desc            String?
-  keyword_reply_rules  Json?
-  conversation_rules   Json?
-  company_url          String
-  index_status         PROCESSING_STATUS   @default(PENDING)
-  created_at           DateTime            @default(now())
-  updated_at           DateTime            @updatedAt
+  id                String            @id @default(cuid())
+  userId            String            @map("user_id")
+  name              String            @db.VarChar(120)
+  roleDesc          String?           @map("role_desc")
+  keywordReplyRules Json?             @map("keyword_reply_rules")
+  conversationRules Json?             @map("conversation_rules")
+  companyUrl        String            @map("company_url")
+  indexStatus       PROCESSING_STATUS @default(PENDING) @map("index_status")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
 
-  owner                User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  chat_sessions        ChatSession[]
-  inquiries            Inquiry[]
+  owner             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatSessions      ChatSession[]
+  inquiries         Inquiry[]
 
-  @@index([user_id])
+  @@index([userId])
 }
 
 model ChatSession {
-  id                   Int           @id @default(autoincrement())
-  session_uuid         String        @unique @default(uuid())
-  bot_id               Int
-  visitor_id           String        @db.VarChar(128)
-  is_read              Boolean       @default(false)
-  created_at           DateTime      @default(now())
+  id        String   @id @default(cuid())
+  botId     String   @map("bot_id")
+  visitorId String   @db.VarChar(128) @map("visitor_id")
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
 
-  bot                  Chatbot       @relation(fields: [bot_id], references: [id], onDelete: Cascade)
-  messages             ChatMessage[]
-  inquiries            Inquiry[]
+  bot       Chatbot     @relation(fields: [botId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+  inquiries Inquiry[]
 
-  @@index([bot_id])
+  @@index([botId])
 }
 
 model ChatMessage {
-  id                   BigInt           @id @default(autoincrement())
-  session_id           Int
-  sender               MESSAGE_SENDER
-  sender_key           String?          @db.VarChar(128)
-  content              String?
-  feedback_result      FEEDBACK_RESULT?
-  created_at           DateTime         @default(now())
+  id             String           @id @default(cuid())
+  sessionId      String           @map("session_id")
+  sender         MESSAGE_SENDER
+  senderKey      String?          @db.VarChar(128) @map("sender_key")
+  content        String?
+  feedbackResult FEEDBACK_RESULT? @map("feedback_result")
+  createdAt      DateTime         @default(now()) @map("created_at")
 
-  session              ChatSession      @relation(fields: [session_id], references: [id], onDelete: Cascade)
-  @@index([session_id])
+  session        ChatSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
 }
 
 model Inquiry {
-  id                   Int           @id @default(autoincrement())
-  bot_id               Int
-  session_id           Int
-  name                 String?       @db.VarChar(120)
-  company_name         String?       @db.VarChar(255)
-  phone_number         String?       @db.VarChar(32)
-  email                String?       @db.VarChar(255)
-  message              String
-  status               INQUIRY_STATUS @default(UNREAD)
-  created_at           DateTime      @default(now())
+  id          String         @id @default(cuid())
+  botId       String         @map("bot_id")
+  sessionId   String?        @map("session_id")
 
-  bot                  Chatbot       @relation(fields: [bot_id], references: [id], onDelete: Cascade)
-  session              ChatSession?  @relation(fields: [session_id], references: [id])
-  @@index([bot_id])
+  name        String         @db.VarChar(120)
+  companyName String?        @db.VarChar(255) @map("company_name")
+  phoneNumber String         @db.VarChar(32) @map("phone_number")
+  email       String?        @db.VarChar(255)
+  message     String
+  status      INQUIRY_STATUS @default(UNREAD)
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  bot         Chatbot        @relation(fields: [botId], references: [id], onDelete: Cascade)
+  session     ChatSession?   @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([botId])
+  @@index([sessionId])
 }

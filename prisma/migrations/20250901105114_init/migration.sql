@@ -12,7 +12,7 @@ CREATE TYPE "public"."INQUIRY_STATUS" AS ENUM ('UNREAD', 'READ', 'ARCHIVED');
 
 -- CreateTable
 CREATE TABLE "public"."User" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password_hash" TEXT NOT NULL,
     "phone_number" TEXT NOT NULL,
@@ -24,13 +24,13 @@ CREATE TABLE "public"."User" (
 
 -- CreateTable
 CREATE TABLE "public"."Chatbot" (
-    "id" SERIAL NOT NULL,
-    "user_id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "user_id" TEXT NOT NULL,
     "name" VARCHAR(120) NOT NULL,
     "role_desc" TEXT,
     "keyword_reply_rules" JSONB,
     "conversation_rules" JSONB,
-    "company_url" TEXT,
+    "company_url" TEXT NOT NULL,
     "index_status" "public"."PROCESSING_STATUS" NOT NULL DEFAULT 'PENDING',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -40,9 +40,8 @@ CREATE TABLE "public"."Chatbot" (
 
 -- CreateTable
 CREATE TABLE "public"."ChatSession" (
-    "id" SERIAL NOT NULL,
-    "session_uuid" TEXT NOT NULL,
-    "bot_id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "bot_id" TEXT NOT NULL,
     "visitor_id" VARCHAR(128) NOT NULL,
     "is_read" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -52,8 +51,8 @@ CREATE TABLE "public"."ChatSession" (
 
 -- CreateTable
 CREATE TABLE "public"."ChatMessage" (
-    "id" BIGSERIAL NOT NULL,
-    "session_id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
+    "session_id" TEXT NOT NULL,
     "sender" "public"."MESSAGE_SENDER" NOT NULL,
     "sender_key" VARCHAR(128),
     "content" TEXT,
@@ -65,12 +64,12 @@ CREATE TABLE "public"."ChatMessage" (
 
 -- CreateTable
 CREATE TABLE "public"."Inquiry" (
-    "id" SERIAL NOT NULL,
-    "bot_id" INTEGER NOT NULL,
-    "session_id" INTEGER,
-    "name" VARCHAR(120),
+    "id" TEXT NOT NULL,
+    "bot_id" TEXT NOT NULL,
+    "session_id" TEXT,
+    "name" VARCHAR(120) NOT NULL,
     "company_name" VARCHAR(255),
-    "phone_number" VARCHAR(32),
+    "phone_number" VARCHAR(32) NOT NULL,
     "email" VARCHAR(255),
     "message" TEXT NOT NULL,
     "status" "public"."INQUIRY_STATUS" NOT NULL DEFAULT 'UNREAD',
@@ -83,7 +82,19 @@ CREATE TABLE "public"."Inquiry" (
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ChatSession_session_uuid_key" ON "public"."ChatSession"("session_uuid");
+CREATE INDEX "Chatbot_user_id_idx" ON "public"."Chatbot"("user_id");
+
+-- CreateIndex
+CREATE INDEX "ChatSession_bot_id_idx" ON "public"."ChatSession"("bot_id");
+
+-- CreateIndex
+CREATE INDEX "ChatMessage_session_id_idx" ON "public"."ChatMessage"("session_id");
+
+-- CreateIndex
+CREATE INDEX "Inquiry_bot_id_idx" ON "public"."Inquiry"("bot_id");
+
+-- CreateIndex
+CREATE INDEX "Inquiry_session_id_idx" ON "public"."Inquiry"("session_id");
 
 -- AddForeignKey
 ALTER TABLE "public"."Chatbot" ADD CONSTRAINT "Chatbot_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
