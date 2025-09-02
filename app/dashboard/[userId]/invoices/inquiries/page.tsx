@@ -74,6 +74,30 @@ const Page = () => {
               <div className="h-12 flex items-center">이메일</div>
               <div className="h-12 flex items-center">대화방</div>
             </div>
+            <div>
+              {VisitorContacts.map((contact) => {
+                return (
+                  <div className="grid items-center grid-cols-[36px_1fr_1fr_1fr_1.5fr_0.7fr] text-sm font-medium border-t">
+                    <div className="h-12 flex items-center">
+                      <input type="checkbox" className="h-4 w-4" />
+                    </div>
+                    <div className="h-12 flex items-center">{contact.name}</div>
+                    <div className="h-12 flex items-center">
+                      {contact.companyName}
+                    </div>
+                    <div className="h-12 flex items-center">
+                      {contact.phoneNumber}
+                    </div>
+                    <div className="h-12 flex items-center">
+                      {contact.email}
+                    </div>
+                    <div className="h-12 flex items-center">
+                      {contact.chatSessionLink}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
