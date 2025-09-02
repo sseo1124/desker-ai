@@ -39,12 +39,13 @@ const VisitorContacts: Visitor[] = [
 const Page = () => {
   const [selected, setSelected] = useState<string[]>([]);
   const [searched, setSearched] = useState("");
+  const [contacts, setContacts] = useState<Visitor[]>(VisitorContacts);
 
-  const allSelected = selected.length === VisitorContacts.length;
+  const allSelected = selected.length === contacts.length;
 
   const toggleAll = (checked: boolean) => {
     if (checked) {
-      setSelected(VisitorContacts.map((contact) => contact.id));
+      setSelected(contacts.map((contact) => contact.id));
     } else {
       setSelected([]);
     }
@@ -59,6 +60,7 @@ const Page = () => {
   };
 
   const handleDelete = () => {
+    setContacts(contacts.filter((person) => !selected.includes(person.id)));
     setSelected([]);
   };
 
@@ -66,15 +68,15 @@ const Page = () => {
     const searchedText = searched.trim().toLowerCase();
 
     if (!searchedText) {
-      return VisitorContacts;
+      return contacts;
     }
 
-    return VisitorContacts.filter((person) =>
+    return contacts.filter((person) =>
       [person.name, person.companyName, person.phoneNumber, person.email].some(
         (text) => text.toLowerCase().includes(searchedText)
       )
     );
-  }, [searched]);
+  }, [searched, contacts]);
 
   return (
     <div className="h-full flex flex-col gap-4">
