@@ -1,6 +1,10 @@
+"use client";
+
 import "@/app/ui/global.css";
+import React, { useState } from "react";
 
 type Visitor = {
+  key: string;
   id: string;
   name: string;
   companyName: string;
@@ -12,6 +16,7 @@ type Visitor = {
 const VisitorContacts: Visitor[] = [
   // 더미 데이터
   {
+    key: "1",
     id: "1",
     name: "김태헌",
     companyName: "바닐라 코딩",
@@ -20,6 +25,7 @@ const VisitorContacts: Visitor[] = [
     chatSessionLink: "링크",
   },
   {
+    key: "2",
     id: "2",
     name: "서상혁",
     companyName: "바닐라 코딩",
@@ -30,6 +36,26 @@ const VisitorContacts: Visitor[] = [
 ];
 
 const Page = () => {
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const allSelected = selected.length === VisitorContacts.length;
+
+  const toggleAll = (checked: boolean) => {
+    if (checked) {
+      setSelected(VisitorContacts.map((contact) => contact.id));
+    } else {
+      setSelected([]);
+    }
+  };
+
+  const toggleOne = (id: string, checked: boolean) => {
+    if (checked) {
+      setSelected([...selected, id]);
+    } else {
+      setSelected(selected.filter((item) => item !== id));
+    }
+  };
+
   return (
     <div className="h-full flex flex-col gap-4">
       <div className="w-full min-w-0 rounded-md bg-brown-100 px-3 py-3">
@@ -66,7 +92,12 @@ const Page = () => {
               "
             >
               <div className="h-12 flex items-center">
-                <input type="checkbox" className="h-4 w-4" />
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={(change) => toggleAll(change.target.checked)}
+                  className="h-4 w-4"
+                />
               </div>
               <div className="h-12 flex items-center">이름</div>
               <div className="h-12 flex items-center">회사명</div>
@@ -77,9 +108,19 @@ const Page = () => {
             <div>
               {VisitorContacts.map((contact) => {
                 return (
-                  <div className="grid items-center grid-cols-[36px_1fr_1fr_1fr_1.5fr_0.7fr] text-sm font-medium border-t">
+                  <div
+                    key={contact.key}
+                    className="grid items-center grid-cols-[36px_1fr_1fr_1fr_1.5fr_0.7fr] text-sm font-medium border-t"
+                  >
                     <div className="h-12 flex items-center">
-                      <input type="checkbox" className="h-4 w-4" />
+                      <input
+                        type="checkbox"
+                        checked={selected.includes(contact.id)}
+                        onChange={(change) =>
+                          toggleOne(contact.id, change.target.checked)
+                        }
+                        className="h-4 w-4"
+                      />
                     </div>
                     <div className="h-12 flex items-center">{contact.name}</div>
                     <div className="h-12 flex items-center">
