@@ -6,6 +6,7 @@
   "scripts": {
     "start": "next start",
     "build": "next build",
+  "build:widget": "esbuild chatbot-widget/index.tsx --bundle --outfile=public/chatbot-widget/widget.js --minify --jsx=automatic",
     "dev": "next dev",
     "lint": "next lint",
     "format": "prettier --write .",
@@ -40,6 +41,7 @@
     "@types/react-dom": "19.0.3",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
+    "esbuild": "^0.25.9",
     "eslint": "^9.34.0",
     "eslint-config-next": "^15.5.2",
     "eslint-config-prettier": "^10.1.8",
