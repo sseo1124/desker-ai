@@ -95,7 +95,7 @@ const Page = () => {
         </div>
         <div className="flex items-center justify-between px-8 pb-4">
           <div className="text-sm text-gray-700">
-            <h1>전체{VisitorContacts.length}개</h1>
+            <h1>전체{contacts.length}개</h1>
           </div>
           {selected.length > 0 ? (
             <DeletedButton onClick={handleDelete} />
