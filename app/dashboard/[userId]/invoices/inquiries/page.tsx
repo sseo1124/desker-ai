@@ -3,8 +3,9 @@
 import "@/app/ui/global.css";
 import React, { useState, useMemo } from "react";
 import DeletedButton from "@/app/ui/dashboard/delete-button";
+import ContactItem from "@/app/ui/dashboard/contact-item";
 
-type Visitor = {
+export type Visitor = {
   key: string;
   id: string;
   name: string;
@@ -132,36 +133,14 @@ const Page = () => {
             <div className="h-12 flex items-center">대화방</div>
           </div>
           <div>
-            {filteredContacts.map((contact) => {
-              return (
-                <div
-                  key={contact.key}
-                  className="grid items-center grid-cols-[36px_1fr_1fr_1fr_1.5fr_0.7fr] text-sm font-medium border-t"
-                >
-                  <div className="h-12 flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(contact.id)}
-                      onChange={(change) =>
-                        toggleOne(contact.id, change.target.checked)
-                      }
-                      className="h-4 w-4"
-                    />
-                  </div>
-                  <div className="h-12 flex items-center">{contact.name}</div>
-                  <div className="h-12 flex items-center">
-                    {contact.companyName}
-                  </div>
-                  <div className="h-12 flex items-center">
-                    {contact.phoneNumber}
-                  </div>
-                  <div className="h-12 flex items-center">{contact.email}</div>
-                  <div className="h-12 flex items-center">
-                    {contact.chatSessionLink}
-                  </div>
-                </div>
-              );
-            })}
+            {filteredContacts.map((contact) => (
+              <ContactItem
+                key={contact.key}
+                contact={contact}
+                selected={selected}
+                toggleOne={toggleOne}
+              />
+            ))}
           </div>
         </div>
       </div>
