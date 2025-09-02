@@ -1,7 +1,8 @@
 "use client";
 
 import "@/app/ui/global.css";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import DeletedButton from "@/app/ui/dashboard/delete-button";
 
 type Visitor = {
   key: string;
@@ -37,6 +38,7 @@ const VisitorContacts: Visitor[] = [
 
 const Page = () => {
   const [selected, setSelected] = useState<string[]>([]);
+  const [searched, setSearched] = useState("");
 
   const allSelected = selected.length === VisitorContacts.length;
 
@@ -56,6 +58,24 @@ const Page = () => {
     }
   };
 
+  const handleDelete = () => {
+    setSelected([]);
+  };
+
+  const filteredContacts = useMemo(() => {
+    const searchedText = searched.trim().toLowerCase();
+
+    if (!searchedText) {
+      return VisitorContacts;
+    }
+
+    return VisitorContacts.filter((person) =>
+      [person.name, person.companyName, person.phoneNumber, person.email].some(
+        (text) => text.toLowerCase().includes(searchedText)
+      )
+    );
+  }, [searched]);
+
   return (
     <div className="h-full flex flex-col gap-4">
       <div className="w-full min-w-0 rounded-md bg-brown-100 px-3 py-3">
@@ -74,71 +94,72 @@ const Page = () => {
           <div className="text-sm text-gray-700">
             <h1>전체{VisitorContacts.length}개</h1>
           </div>
-          <div className="w-56">
+          {selected.length > 0 ? (
+            <DeletedButton onClick={handleDelete} />
+          ) : null}
+          <div className="flex items-center gap-3 w-auto">
             <input
               type="text"
               placeholder="검색"
+              value={searched}
+              onChange={(event) => setSearched(event.target.value)}
               className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brown-300"
             />
           </div>
         </div>
-        <div>
-          <div className="px-8">
-            <div
-              className="grid items-center
+        <div className="px-8">
+          <div
+            className="grid items-center
               grid-cols-[36px_1fr_1fr_1fr_1.5fr_0.7fr]
               text-sm font-medium
               border-t
               "
-            >
-              <div className="h-12 flex items-center">
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  onChange={(change) => toggleAll(change.target.checked)}
-                  className="h-4 w-4"
-                />
-              </div>
-              <div className="h-12 flex items-center">이름</div>
-              <div className="h-12 flex items-center">회사명</div>
-              <div className="h-12 flex items-center">연락처</div>
-              <div className="h-12 flex items-center">이메일</div>
-              <div className="h-12 flex items-center">대화방</div>
+          >
+            <div className="h-12 flex items-center">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={(event) => toggleAll(event.target.checked)}
+                className="h-4 w-4"
+              />
             </div>
-            <div>
-              {VisitorContacts.map((contact) => {
-                return (
-                  <div
-                    key={contact.key}
-                    className="grid items-center grid-cols-[36px_1fr_1fr_1fr_1.5fr_0.7fr] text-sm font-medium border-t"
-                  >
-                    <div className="h-12 flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={selected.includes(contact.id)}
-                        onChange={(change) =>
-                          toggleOne(contact.id, change.target.checked)
-                        }
-                        className="h-4 w-4"
-                      />
-                    </div>
-                    <div className="h-12 flex items-center">{contact.name}</div>
-                    <div className="h-12 flex items-center">
-                      {contact.companyName}
-                    </div>
-                    <div className="h-12 flex items-center">
-                      {contact.phoneNumber}
-                    </div>
-                    <div className="h-12 flex items-center">
-                      {contact.email}
-                    </div>
-                    <div className="h-12 flex items-center">
-                      {contact.chatSessionLink}
-                    </div>
+            <div className="h-12 flex items-center">이름</div>
+            <div className="h-12 flex items-center">회사명</div>
+            <div className="h-12 flex items-center">연락처</div>
+            <div className="h-12 flex items-center">이메일</div>
+            <div className="h-12 flex items-center">대화방</div>
+          </div>
+          <div>
+            {filteredContacts.map((contact) => {
+              return (
+                <div
+                  key={contact.key}
+                  className="grid items-center grid-cols-[36px_1fr_1fr_1fr_1.5fr_0.7fr] text-sm font-medium border-t"
+                >
+                  <div className="h-12 flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(contact.id)}
+                      onChange={(change) =>
+                        toggleOne(contact.id, change.target.checked)
+                      }
+                      className="h-4 w-4"
+                    />
                   </div>
-                );
-              })}
-            </div>
+                  <div className="h-12 flex items-center">{contact.name}</div>
+                  <div className="h-12 flex items-center">
+                    {contact.companyName}
+                  </div>
+                  <div className="h-12 flex items-center">
+                    {contact.phoneNumber}
+                  </div>
+                  <div className="h-12 flex items-center">{contact.email}</div>
+                  <div className="h-12 flex items-center">
+                    {contact.chatSessionLink}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
