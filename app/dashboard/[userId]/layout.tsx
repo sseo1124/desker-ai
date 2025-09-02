@@ -15,7 +15,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <SideNavBar userId={userId} />
         </div>
       </div>
-      <div className="flex-grow p-6 md:p-12">{children}</div>
+      <main className="flex-1 min-w-0 h-full flex flex-col overflow-hidden pt-4">
+        {children}
+      </main>
     </div>
   );
 };
