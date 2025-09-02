@@ -1,271 +1,139 @@
 import {
   PrismaClient,
-  PROCESSING_STATUS,
   MESSAGE_SENDER,
   FEEDBACK_RESULT,
   INQUIRY_STATUS,
+  PROCESSING_STATUS,
 } from "@/app/generated/prisma";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log(`seeding 시작...`);
+  console.log("Seeding started (camelCase version)...");
 
-  const usersData = [
-    { email: "ceo@mycompany.com", phone_number: "010-1234-5678" },
-    { email: "manager@shop.com", phone_number: "010-2222-3333" },
-    { email: "owner@cafe.com", phone_number: "010-4444-5555" },
-    { email: "info@agency.dev", phone_number: "010-6666-7777" },
-    { email: "contact@service.io", phone_number: "010-8888-9999" },
-  ];
+  console.log("Deleting existing data...");
+  await prisma.inquiry.deleteMany();
+  await prisma.chatMessage.deleteMany();
+  await prisma.chatSession.deleteMany();
+  await prisma.chatbot.deleteMany();
+  await prisma.user.deleteMany();
+  console.log("Existing data deleted.");
 
-  const createdUsers = [];
-  for (const u of usersData) {
-    const hashedPassword = await bcrypt.hash("password123", 10);
-    const user = await prisma.user.create({
-      data: { ...u, password_hash: hashedPassword },
-    });
-    createdUsers.push(user);
-  }
-  console.log(`✅ ${createdUsers.length} users 생성`);
+  const hashedPassword = await bcrypt.hash("password123", 10);
+  const user = await prisma.user.create({
+    data: {
+      email: "testuser@example.com",
+      passwordHash: hashedPassword,
+      phoneNumber: "010-1234-5678",
+    },
+  });
+  console.log(`Created user: ${user.email}`);
 
-  const chatbotsData = [
-    {
-      user_id: createdUsers[0].id,
-      name: "MyCompany AI 안내원",
-      company_url: "https://mycompany.com",
-      index_status: PROCESSING_STATUS.COMPLETED,
+  const chatbot = await prisma.chatbot.create({
+    data: {
+      name: "고객 지원 챗봇",
+      companyUrl: "https://mycompany.com",
+      indexStatus: PROCESSING_STATUS.COMPLETED,
+      roleDesc: "이 챗봇은 고객의 질문에 친절하게 답변하는 역할을 합니다.",
+      owner: {
+        connect: { id: user.id },
+      },
     },
-    {
-      user_id: createdUsers[1].id,
-      name: "온라인 쇼핑몰 CS봇",
-      company_url: "https://shop.com/faq",
-      index_status: PROCESSING_STATUS.COMPLETED,
-    },
-    {
-      user_id: createdUsers[2].id,
-      name: "카페 이벤트 안내봇",
-      company_url: "https://cafe-seoul.com/events",
-      index_status: PROCESSING_STATUS.PENDING,
-    },
-    {
-      user_id: createdUsers[3].id,
-      name: "에이전시 포트폴리오 봇",
-      company_url: "https://agency.dev/projects",
-      index_status: PROCESSING_STATUS.PROCESSING,
-    },
-    {
-      user_id: createdUsers[0].id,
-      name: "MyCompany 기술지원 봇",
-      company_url: "https://mycompany.com/docs",
-      index_status: PROCESSING_STATUS.FAILED,
-    },
-  ];
+  });
+  console.log(`Created chatbot: ${chatbot.name}`);
 
-  const createdChatbots = [];
-  for (const c of chatbotsData) {
-    const chatbot = await prisma.chatbot.create({ data: c });
-    createdChatbots.push(chatbot);
-  }
-  console.log(`✅ ${createdChatbots.length} chatbots 생성`);
+  const session1 = await prisma.chatSession.create({
+    data: {
+      visitorId: "visitor-uuid-1111-aaaa",
+      bot: {
+        connect: { id: chatbot.id },
+      },
+      messages: {
+        create: [
+          {
+            sender: MESSAGE_SENDER.VISITOR,
+            content: "안녕하세요, 제품 배송 문의 좀 하려구요.",
+          },
+          {
+            sender: MESSAGE_SENDER.AI,
+            content: "네, 안녕하세요! 주문번호를 알려주시겠어요?",
+          },
+          {
+            sender: MESSAGE_SENDER.VISITOR,
+            content: "주문번호는 KR-12345 입니다.",
+          },
+          {
+            sender: MESSAGE_SENDER.AI,
+            content:
+              "확인 결과, 고객님의 상품은 오늘 출고될 예정입니다. 도움이 되셨나요?",
+            feedbackResult: FEEDBACK_RESULT.HELPFUL, // camelCase로 변경
+          },
+        ],
+      },
+    },
+  });
+  console.log(`Created chat session with ID: ${session1.id}`);
 
-  const sessionsData = [
-    {
-      bot_id: createdChatbots[0].id,
-      visitor_id: "visitor-001",
-      is_read: false,
-    },
-    { bot_id: createdChatbots[1].id, visitor_id: "visitor-002", is_read: true },
-    {
-      bot_id: createdChatbots[1].id,
-      visitor_id: "visitor-003",
-      is_read: false,
-    },
-    { bot_id: createdChatbots[2].id, visitor_id: "visitor-004", is_read: true },
-    {
-      bot_id: createdChatbots[0].id,
-      visitor_id: "visitor-005",
-      is_read: false,
-    },
-    {
-      bot_id: createdChatbots[4].id,
-      visitor_id: "visitor-006",
-      is_read: false,
-    },
-  ];
-
-  const createdSessions = [];
-  for (const s of sessionsData) {
-    const session = await prisma.chatSession.create({ data: s });
-    createdSessions.push(session);
-  }
-  console.log(`✅ ${createdSessions.length} chat sessions 생성`);
-
-  const messagesData = [
-    {
-      session_id: createdSessions[0].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "배송 규정 알려주세요.",
-    },
-    {
-      session_id: createdSessions[0].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "안녕하세요! 저희 MyCompany의 배송 규정에 대해 알려드릴게요. 기본 배송은 영업일 기준 3일이 소요됩니다.",
-      feedback_result: FEEDBACK_RESULT.HELPFUL,
-    },
-    {
-      session_id: createdSessions[0].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "제주도인데, 추가 비용이 있나요?",
-    },
-    {
-      session_id: createdSessions[0].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "네, 제주도 및 도서산간 지역은 3,000원의 추가 배송비가 발생할 수 있습니다.",
-    },
-    {
-      session_id: createdSessions[0].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "알겠습니다. 감사합니다.",
-    },
-    {
-      session_id: createdSessions[1].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "환불 가능한가요?",
-    },
-    {
-      session_id: createdSessions[1].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "죄송합니다. 제가 답변하기 어려운 질문이네요. 담당자에게 문의하시겠어요?",
-      feedback_result: FEEDBACK_RESULT.UNHELPFUL,
-    },
-    {
-      session_id: createdSessions[1].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "네 연결해주세요.",
-    },
-    {
-      session_id: createdSessions[2].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "혹시 파란색 스웨터 재고 있나요?",
-    },
-    {
-      session_id: createdSessions[2].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "네, 고객님. 문의하신 파란색 스웨터(L 사이즈)는 현재 5개 남아있습니다.",
-    },
-    {
-      session_id: createdSessions[2].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "M 사이즈는요?",
-    },
-    {
-      session_id: createdSessions[2].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "M 사이즈는 아쉽게도 현재 품절 상태입니다. 재입고 알림을 신청하시겠어요?",
-    },
-    {
-      session_id: createdSessions[2].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "아니요 괜찮아요.",
-    },
-    {
-      session_id: createdSessions[3].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "이번 달 이벤트가 뭔가요?",
-    },
-    {
-      session_id: createdSessions[3].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "8월 한 달간 모든 커피 원두 구매 시 드립백 1개를 증정하는 이벤트를 진행하고 있습니다!",
-      feedback_result: FEEDBACK_RESULT.HELPFUL,
-    },
-    {
-      session_id: createdSessions[4].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "API 연동 문서는 어디서 볼 수 있나요?",
-    },
-    {
-      session_id: createdSessions[4].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "개발자 문서는 [링크]에서 확인하실 수 있습니다. 더 궁금한 점이 있으신가요?",
-    },
-    {
-      session_id: createdSessions[4].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "아니요, 확인해보겠습니다.",
-    },
-    {
-      session_id: createdSessions[5].id,
-      sender: MESSAGE_SENDER.VISITOR,
-      content: "비밀번호를 잃어버렸어요.",
-    },
-    {
-      session_id: createdSessions[5].id,
-      sender: MESSAGE_SENDER.AI,
-      content:
-        "제가 도와드릴 수 없는 부분이네요. 담당자에게 문의를 남겨주시겠어요?",
-    },
-  ];
-
-  await prisma.chatMessage.createMany({ data: messagesData });
-  console.log(`✅ ${messagesData.length} chat messages 생성`);
-
-  const inquiriesData = [
-    {
-      bot_id: createdChatbots[1].id,
-      session_id: createdSessions[1].id,
-      name: "박영희",
-      email: "younghee@test.com",
-      message: "환불 규정에 대해 더 자세히 알고 싶어요.",
+  const inquiry1 = await prisma.inquiry.create({
+    data: {
+      name: "김민준",
+      phoneNumber: "010-1111-2222",
+      email: "minjun.kim@example.com",
+      message:
+        "배송이 너무 늦어지는 것 같아 문의 남깁니다. 빠른 확인 부탁드려요.",
       status: INQUIRY_STATUS.UNREAD,
+      bot: {
+        connect: { id: chatbot.id },
+      },
+      session: {
+        connect: { id: session1.id },
+      },
     },
-    {
-      bot_id: createdChatbots[0].id,
-      session_id: createdSessions[0].id,
-      name: "이민준",
-      email: "minjun@test.com",
-      message: "대량 구매 견적 문의드립니다.",
-      status: INQUIRY_STATUS.UNREAD,
+  });
+  console.log(`Created inquiry linked to session: ${inquiry1.id}`);
+
+  const session2 = await prisma.chatSession.create({
+    data: {
+      visitorId: "visitor-uuid-2222-bbbb",
+      isRead: true,
+      bot: {
+        connect: { id: chatbot.id },
+      },
+      messages: {
+        create: [
+          {
+            sender: MESSAGE_SENDER.VISITOR,
+            content: "환불 정책이 어떻게 되나요?",
+          },
+          {
+            sender: MESSAGE_SENDER.AI,
+            content:
+              "환불은 상품 수령 후 7일 이내에 가능하며, 웹사이트의 마이페이지에서 신청하실 수 있습니다.",
+          },
+        ],
+      },
     },
-    {
-      bot_id: createdChatbots[1].id,
-      session_id: createdSessions[2].id,
-      name: "최지우",
-      email: "jiwoo@test.com",
-      message: "제품 A/S는 어떻게 받나요?",
+  });
+  console.log(`Created chat session with ID: ${session2.id}`);
+
+  const inquiry2 = await prisma.inquiry.create({
+    data: {
+      name: "이서연",
+      phoneNumber: "010-3333-4444",
+      email: "seoyeon.lee@example.com",
+      companyName: "테스트 컴퍼니",
+      message:
+        "서비스 제휴 관련으로 문의드립니다. 담당자분 연락처를 알 수 있을까요?",
       status: INQUIRY_STATUS.READ,
+      bot: {
+        connect: { id: chatbot.id },
+      },
     },
-    {
-      bot_id: createdChatbots[2].id,
-      session_id: createdSessions[3].id,
-      name: "정서윤",
-      email: "seoyun@test.com",
-      message: "이벤트 참여 방법을 문의합니다.",
-      status: INQUIRY_STATUS.ARCHIVED,
-    },
-    {
-      bot_id: createdChatbots[4].id,
-      session_id: createdSessions[5].id,
-      name: "강하준",
-      email: "hajun@test.com",
-      message: "기술 지원팀 연결 부탁드립니다.",
-      status: INQUIRY_STATUS.UNREAD,
-    },
-  ];
+  });
+  console.log(`Created standalone inquiry: ${inquiry2.id}`);
 
-  await prisma.inquiry.createMany({ data: inquiriesData });
-  console.log(`✅ ${inquiriesData.length} inquiries 생성`);
-
-  console.log(`Seeding 끝`);
+  console.log("Seeding finished.");
 }
 
 main()
@@ -274,5 +142,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
+    // 스크립트 종료 시 Prisma 클라이언트 연결을 해제합니다.
     await prisma.$disconnect();
   });
