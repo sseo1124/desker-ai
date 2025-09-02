@@ -9,7 +9,7 @@ const SideNavBar = ({ userId }: { userId: number }) => {
   let sectionTitle = "";
   let menuList: { title: string; href: string }[] = [];
 
-  if (pathname.indexOf(`/dashboard/${userId}/invoices`) !== -1) {
+  if (pathname.includes(`/dashboard/${userId}/invoices`)) {
     sectionTitle = "수신함";
     menuList = [
       {
@@ -23,7 +23,7 @@ const SideNavBar = ({ userId }: { userId: number }) => {
     ];
   }
 
-  if (pathname.indexOf(`/dashboard/${userId}/chatbot`) !== -1) {
+  if (pathname.includes(`/dashboard/${userId}/chatbot`)) {
     sectionTitle = "AI";
     menuList = [
       {
