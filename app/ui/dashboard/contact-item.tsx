@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Visitor } from "@/app/dashboard/[userId]/invoices/inquiries/page";
+import type { Visitor } from "@/app/dashboard/[userId]/invoices/inquiries/page";
 
 type ContactItemType = {
   contact: Visitor;
