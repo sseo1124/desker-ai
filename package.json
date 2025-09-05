@@ -6,7 +6,7 @@
   "scripts": {
     "start": "next start",
     "build": "next build",
-  "build:widget": "esbuild chatbot-widget/index.tsx --bundle --outfile=public/chatbot-widget/widget.js --minify --jsx=automatic",
+    "build:widget": "esbuild chatbot-widget/index.tsx --bundle --outfile=public/chatbot-widget/widget.js --minify --jsx=automatic",
     "dev": "next dev",
     "lint": "next lint",
     "format": "prettier --write .",
@@ -23,6 +23,7 @@
     "autoprefixer": "10.4.20",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
+    "localstorage-slim": "^2.7.1",
     "next": "latest",
     "next-auth": "5.0.0-beta.25",
     "postcss": "8.5.1",
