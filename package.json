@@ -6,7 +6,7 @@
   "scripts": {
     "start": "next start",
     "build": "next build",
-    "build:widget": "esbuild chatbot-widget/index.tsx --bundle --outfile=public/chatbot-widget/widget.js --minify --jsx=automatic",
+  "build:widget": "tailwindcss -i ./app/ui/global.css -o ./public/chatbot-widget/widget.css --minify && esbuild chatbot-widget/index.tsx --bundle --outfile=public/chatbot-widget/widget.js --jsx=automatic --minify",
     "dev": "next dev",
     "lint": "next lint",
     "format": "prettier --write .",
@@ -17,9 +17,11 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@lottiefiles/dotlottie-react": "^0.15.2",
     "@prisma/client": "^6.15.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "@tailwindcss/forms": "^0.5.10",
+    "ai": "^5.0.29",
     "autoprefixer": "10.4.20",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",

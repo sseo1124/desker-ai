@@ -1,36 +1,83 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import ChatbotWidget from "@/chatbot-widget/components/ChatbotButton";
+import ChatWindow from "@/chatbot-widget/components/ChatWindow";
+import { getOrSetVisitorId } from "@/chatbot-widget/lib/visitor";
 
 interface AppProps {
-  config: {
+  chatbotConfig: {
     botId: string;
     apiBaseURL: string;
   };
 }
 
-const App = ({ config }: AppProps) => {
-  // 테스트 용으로 간단한 위젯 스타일 적용 -> 향후 UI 작업으로 변경할 예정
-  const widgetStyle: React.CSSProperties = {
-    position: "fixed",
-    bottom: "20px",
-    right: "20px",
-    width: "300px",
-    padding: "20px",
-    backgroundColor: "gray",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-    fontFamily: "sans-serif",
-    zIndex: "9999",
+const App = ({ chatbotConfig }: AppProps) => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [chatSessionId, setChatSessionId] = useState("");
+  const { botId, apiBaseURL } = chatbotConfig;
+  const visitorId = getOrSetVisitorId();
+
+  useEffect(() => {
+    if (chatSessionId || !visitorId || !botId || !apiBaseURL) {
+      if (visitorId && botId && apiBaseURL) {
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    const initializeChatSession = async () => {
+      try {
+        const responseToGetSession = await fetch(
+          `${apiBaseURL}/api/chat/session?botId=${botId}&visitorId=${visitorId}`
+        );
+
+        if (responseToGetSession.ok) {
+          const chatSessionData = await responseToGetSession.json();
+          setChatSessionId(chatSessionData.chatSessionId);
+          return;
+        }
+
+        if (responseToGetSession.status === 404) {
+          const responseToCreateSession = await fetch(
+            `${apiBaseURL}/api/chat/session`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ botId, visitorId }),
+            }
+          );
+
+          const chatSessionData = await responseToCreateSession.json();
+          setChatSessionId(chatSessionData.chatSessionId);
+        }
+      } catch (error) {
+        console.error("세션 초기화 실패: ", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeChatSession();
+  }, [visitorId, botId, apiBaseURL]);
+
+  const handleWidgetClick = () => {
+    if (isLoading) {
+      console.log("채팅방을 불러오는 중입니다...");
+      return;
+    }
+
+    if (isChatOpen) {
+      setIsChatOpen(false);
+      return;
+    }
+
+    setIsChatOpen(true);
   };
 
   return (
-    <div style={widgetStyle}>
-      <h3 style={{ marginTop: 0 }}>챗봇 위젯 로딩 성공!!</h3>
-      <p>전달받은 정보:</p>
-      <ul>
-        <li>Bot ID: {config.botId}</li>
-        <li>API URL: {config.apiBaseURL}</li>
-      </ul>
+    <div className="fixed bottom-7 right-5 flex flex-col items-end p-5 z-[9997]">
+      {isChatOpen && <ChatWindow chatId={chatSessionId} apiUrl={apiBaseURL} />}
+      <ChatbotWidget onClick={handleWidgetClick}></ChatbotWidget>
     </div>
   );
 };

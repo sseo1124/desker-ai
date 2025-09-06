@@ -7,10 +7,12 @@
     return;
   }
 
+  const loaderURL = new URL(loaderScript.src);
+  const apiBaseURL = loaderURL.origin;
+
   window.DESKER_CHATBOT_CONFIG = {
     botId,
-    // 배포후 서버 도메인 생기는 경우 변경필요
-    apiBaseURL: "http://localhost:3000"
+    apiBaseURL
   }
 
   const container = document.createElement('div');
@@ -18,8 +20,7 @@
   document.body.appendChild(container);
 
   const widgetScript =document.createElement("script");
-  // 배포후 서버 도메인 생기는 경우 변경필요
-  widgetScript.src = "http://localhost:3000/chatbot-widget/widget.js"
+  widgetScript.src = `${apiBaseURL}/chatbot-widget/widget.js`
   widgetScript.async = true;
   document.body.appendChild(widgetScript);
 })();
