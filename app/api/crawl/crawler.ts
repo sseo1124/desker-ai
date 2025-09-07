@@ -66,5 +66,5 @@ export const crawler = () => {
     return crawledPages;
   };
 
-  return { crawler, crawlByBotId };
+  return { crawl, crawlByBotId };
 };
