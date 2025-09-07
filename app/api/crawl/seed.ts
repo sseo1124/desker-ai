@@ -20,6 +20,7 @@ interface SeedOptions {
 }
 
 export type Seed = {
+  botId: string;
   url: string;
   limit: number;
   indexName: string;
@@ -31,6 +32,7 @@ export type Seed = {
 type DocumentSplitter = RecursiveCharacterTextSplitter | MarkdownTextSplitter;
 
 export const seed = async ({
+  botId,
   url,
   limit,
   indexName,
@@ -74,9 +76,9 @@ export const seed = async ({
     /** 백터 DB 인덱스 생성 */
     const pineconeIndex = pinecone.Index(indexName);
     const vectorRecords = await Promise.all(
-      splitDocuments.flat().map(buildVectorRecord)
+      splitDocuments.flat().map(buildVectorRecord(botId))
     );
-    await chunkedUpsert(pineconeIndex, vectorRecords, "", 1000);
+    await chunkedUpsert(pineconeIndex, vectorRecords, "", botId, 1000);
 
     return splitDocuments[0];
   } catch (error) {
@@ -109,12 +111,12 @@ const getEmbeddings = async (input: string): Promise<number[]> => {
   return embedRes.embedding.values as number[];
 };
 
-const buildVectorRecord = async (doc: Document) => {
+const buildVectorRecord = (botId: string) => async (doc: Document) => {
   const values = await getEmbeddings(doc.pageContent);
   return {
     id: `${Date.now()}`,
     values,
-    metadata: { url: doc.metadata.url },
+    metadata: { botId, url: doc.metadata.url },
   } satisfies PineconeRecord;
 };
 
@@ -122,6 +124,7 @@ const chunkedUpsert = async (
   index: Index,
   vectors: PineconeRecord[],
   namespace: string,
+  botId: string,
   batchSize = 1000
 ) => {
   for (let i = 0; i < vectors.length; i += batchSize) {
