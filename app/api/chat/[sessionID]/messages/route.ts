@@ -29,7 +29,7 @@ export const GET = async (
       select: {
         id: true,
         sender: true,
-        content: true
+        content: true,
       },
       orderBy: { createdAt: "asc" },
     });
@@ -40,17 +40,14 @@ export const GET = async (
       parts: msg.content ? JSON.parse(msg.content) : [],
     }));
 
-    return NextResponse.json(
-      { messages: uiMessages },
-      { status: 200 }
-    );
+    return NextResponse.json({ messages: uiMessages }, { status: 200 });
   } catch (error) {
     console.error("메세지 불러오기 에러: ", error);
     return NextResponse.json(
       {
         error: {
           code: "INTERNAL_SERVER_ERROR",
-          message: "채팅방 메시지 조회하는데 실패했습니다.",
+          message: ERROR_MESSAGE.INTERNAL_SERVER_ERROR_SESSION,
         },
       },
       { status: 500 }
