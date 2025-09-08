@@ -1,51 +1,68 @@
 "use client";
-import { useState } from "react";
+import ChatConversation from "@/app/ui/chat/ChatConversation";
+import {
+  PromptInput,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputToolbar,
+} from "@/components/ai-elements/prompt-input";
+import { useState, useEffect, use } from "react";
+import { DefaultChatTransport } from "ai";
+import { useChat } from "@ai-sdk/react";
 
-const ChatBot = () => {
+const ChatBot = ({ params }: { params: Promise<{ sessionID: string }> }) => {
+  const { sessionID } = use(params);
+
   const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { messages, setMessages, sendMessage, status } = useChat({
+    id: sessionID,
+    transport: new DefaultChatTransport({
+      api: `${process.env.NEXT_PUBLIC_DESEKER_SERVER_URL}/api/chat/conversation`,
+    }),
+  });
+
+  useEffect(() => {
+    const loadPrevMessages = async () => {
+      try {
+        const messagesResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_DESEKER_SERVER_URL}/api/chat/${sessionID}/messages`
+        );
+        const messageData = await messagesResponse.json();
+
+        if (messageData.messages && messageData.messages.length > 0) {
+          setMessages(messageData.messages);
+        }
+      } catch (error) {
+        console.error("기존 메시지 로드하기 실패: ", error);
+      }
+    };
+
+    loadPrevMessages();
+  }, [sessionID]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input.trim()) {
+      sendMessage({ text: input });
+      setInput("");
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 relative size-full h-screen">
-      {/* 메시지창 헤더 */}
-      <div className="flex justify-between items-center p-3 border-b border-gray-200">
-        <h3 className="font-bold text-lg text-gray-800">데스커AI 안내원</h3>
+      <div className="flex flex-col h-full">
+        <ChatConversation messages={messages} status={status} />
+        <PromptInput onSubmit={handleSubmit} className="mt-4">
+          <PromptInputTextarea
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="회사관련 궁금한 정보 저한테 물어보세요"
+            value={input}
+          />
+          <PromptInputToolbar className="flex justify-end">
+            <PromptInputSubmit disabled={!input} status={status} />
+          </PromptInputToolbar>
+        </PromptInput>
       </div>
-
-      {/* 메시지창 목록 영역 */}
-      <div className="flex-1 p-4 overflow-y-auto">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-screen">
-            Loading...
-          </div>
-        ) : (
-          <div className={`flex "justify-start" mb-4`}>
-            <div
-              className={`max-w-[80%] rounded-lg px-4 py-3 bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100`}
-            >
-              <div className="whitespace-pre-wrap">
-                <div>"대화 메시지"</div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* 메시지창 입력 영역 */}
-      <form
-        className="p-3 border-t border-gray-200"
-        onSubmit={(e) => {
-          e.preventDefault();
-          setInput("");
-        }}
-      >
-        <input
-          className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          value={input}
-          placeholder="메시지를 입력하세요..."
-          onChange={(e) => setInput(e.currentTarget.value)}
-        />
-      </form>
     </div>
   );
 };

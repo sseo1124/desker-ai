@@ -1,11 +1,13 @@
-import React from "react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+import { useState, useEffect } from "react";
 
 interface ChatWindowProps {
   chatId: string;
   apiUrl: string;
 }
 
-export default function ChatWindow({ chatId, apiUrl }: ChatWindowProps) {
+const ChatWindow = ({ chatId, apiUrl }: ChatWindowProps) => {
   return (
     <iframe
       id="desker-ai-chat-window"
@@ -14,4 +16,6 @@ export default function ChatWindow({ chatId, apiUrl }: ChatWindowProps) {
       title="Desker AI Chat Window"
     />
   );
-}
+};
+
+export default ChatWindow;

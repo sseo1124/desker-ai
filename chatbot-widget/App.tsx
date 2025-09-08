@@ -62,7 +62,6 @@ const App = ({ chatbotConfig }: AppProps) => {
 
   const handleWidgetClick = () => {
     if (isLoading) {
-      console.log("채팅방을 불러오는 중입니다...");
       return;
     }
 
