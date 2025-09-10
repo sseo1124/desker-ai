@@ -2,9 +2,13 @@ import "@/app/ui/global.css";
 import SideBar from "@/app/ui/dashboard/side-bar";
 import SideNavBar from "@/app/ui/dashboard/side-nav-bar";
 
-const userId = 1234; // 임시 userId (확인용)
+type LayoutProps = {
+  params: { userId: string; sessionId: string };
+  children: React.ReactNode;
+};
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ params, children }: LayoutProps) => {
+  const { userId } = params;
   return (
     <div className="flex h-screen flex-row overflow-hidden">
       <div className="flex h-full">
@@ -15,7 +19,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <SideNavBar userId={userId} />
         </div>
       </div>
-      <div className="flex-grow p-6 md:p-12">{children}</div>
+      <div className="flex-grow p-4 md:p-5">{children}</div>
     </div>
   );
 };

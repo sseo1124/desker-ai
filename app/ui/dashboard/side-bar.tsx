@@ -3,7 +3,7 @@ import LogoImage from "./logo-image";
 import SideLinks from "./side-links";
 import { PowerIcon } from "@heroicons/react/24/outline";
 
-const SideBar = ({ userId }: { userId: number }) => {
+const SideBar = ({ userId }: { userId: string }) => {
   return (
     <div className="flex h-full flex-col px-3 py-4">
       <Link

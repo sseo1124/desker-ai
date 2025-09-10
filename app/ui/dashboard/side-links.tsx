@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-const SideLinks = ({ userId }: { userId: number }) => {
+const SideLinks = ({ userId }: { userId: string }) => {
   const navLinks = [
-    { name: "수신함", href: `/dashboard/${userId}/invoices` },
+    { name: "수신함", href: `/dashboard/${userId}/invoices/sessions` },
     { name: "AI", href: `/dashboard/${userId}/chatbot` },
   ];
   return (
