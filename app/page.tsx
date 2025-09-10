@@ -29,7 +29,7 @@ const LandingPage = () => {
             <span>로그인 하기</span>
           </Link>
           <Link
-            href="/demo"
+            href="/login"
             className="text-aline gap-5 self-start rounded-lg bg-brown-700 px-7 py-3.5 text-base md:px-8 md:py-4 md:text-lg lg:px-10 lg:py-5 lg:text-xl font-medium text-white transition-colors hover:bg-brown-200 hover:text-black"
           >
             <span>무료로 체험하기</span>
