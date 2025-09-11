@@ -12,13 +12,12 @@ const providers: Provider[] = [
       password: { label: "Password", type: "password" },
     },
     async authorize(c) {
-
       const email = String(c?.email ?? "");
       const validatedEmail = validator.isEmail(email);
       const password = String(c?.password ?? "").trim();
 
       if (!validatedEmail || !password) return null;
-      
+
       const user = await prisma.user.findUnique({
         where: { email },
         select: { id: true, passwordHash: true },
