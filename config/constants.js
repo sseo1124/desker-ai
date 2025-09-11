@@ -6,6 +6,12 @@ export const TTL_INFO = {
   SESSION_STORAGE_VISITOR: 7 * 24 * 60 * 60,
 };
 
+export const RAG_SETTINGS = {
+  CHUNK_SIZE: 1000,
+  CHUNK_OVERLAP: 200,
+  BATCH_SIZE: 100,
+};
+
 export const CHATBOT_DFAULT_VALUE = {
   NAME: "데스커 안내원",
   COMPANY_URL: "https://www.naver.com",

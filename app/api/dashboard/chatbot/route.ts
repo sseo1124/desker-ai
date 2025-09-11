@@ -2,6 +2,7 @@ import { ERROR_MESSAGE } from "@/config/constants";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { PROCESSING_STATUS } from "@/app/generated/prisma";
+import { processAndEmbed } from "@/lib/rag/actions";
 
 export const GET = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
@@ -121,8 +122,8 @@ export const PUT = async (req: Request) => {
         indexStatus: PROCESSING_STATUS.PROCESSING,
       },
     });
-    // TODO: 여기에 크롤링과 vectorDB 저장 API를 호출하는 로직을 추가할 수 있습니다.
-    // 예: await startCrawling(companyUrl);
+
+    await processAndEmbed(botId, companyUrl);
 
     const updatedChatbot = await prisma.chatbot.update({
       where: { id: botId },
