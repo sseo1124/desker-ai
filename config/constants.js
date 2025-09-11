@@ -30,7 +30,6 @@ export const ERROR_MESSAGE = {
   INTERNAL_SERVER_ERROR_CHATBOT_UPDATE:
     "챗봇 학습 정보 업데이트하는데 서버 에러가 났습니다",
   LOGIN_REQUIRED: "로그인이 필요합니다.",
-  CHATBOT_NOT_FOUND: "연결된 해당 챗봇이 존재하지 않습니다.",
   CHAT_LIST_FETCH_FAILURE: "대화목록 조회가 실패하였습니다.",
   MESSAGE_FETCH_FAILURE: "상세 대화 조회가 실패하였습니다.",
 };

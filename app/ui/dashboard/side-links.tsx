@@ -3,7 +3,7 @@ import Link from "next/link";
 const SideLinks = ({ userId }: { userId: string }) => {
   const navLinks = [
     { name: "수신함", href: `/dashboard/${userId}/invoices/sessions` },
-    { name: "AI", href: `/dashboard/${userId}/chatbot` },
+    { name: "AI", href: `/dashboard/${userId}/chatbot/setting` },
   ];
   return (
     <div className="flex flex-col space-y-2">

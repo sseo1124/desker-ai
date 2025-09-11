@@ -3,12 +3,12 @@ import SideBar from "@/app/ui/dashboard/side-bar";
 import SideNavBar from "@/app/ui/dashboard/side-nav-bar";
 
 type LayoutProps = {
-  params: { userId: string; sessionId: string };
+  params: { userId: string };
   children: React.ReactNode;
 };
 
-const Layout = ({ params, children }: LayoutProps) => {
-  const { userId } = params;
+const Layout = async ({ params, children }: LayoutProps) => {
+  const { userId } = await params;
   return (
     <div className="flex h-screen flex-row overflow-hidden">
       <div className="flex h-full">

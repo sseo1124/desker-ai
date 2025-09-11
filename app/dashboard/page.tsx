@@ -9,7 +9,7 @@ const DashboardHub = async () => {
     (session.user as any)?.id || (session as any).userId || (session as any).id;
 
   if (!userId) redirect("/login");
-  redirect(`/dashboard/${userId}`);
+  redirect(`/dashboard/${userId}/invoices/sessions`);
 };
 
 export default DashboardHub;

@@ -14,11 +14,8 @@ import { Input } from "@/components/ui/input";
 import { signIn } from "@/auth.server";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
-import { useFormStatus } from "react-dom";
 
 const LoginPage = () => {
-  const { pending } = useFormStatus();
-
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-background via-muted/50 to-muted/30 flex items-center justify-center p-6">
       <Card className="w-full max-w-md shadow-lg">
@@ -93,8 +90,8 @@ const LoginPage = () => {
                 </Link>
               </div>
 
-              <Button type="submit" className="w-full" disabled={pending}>
-                {pending ? "로그인 중..." : "로그인"}
+              <Button type="submit" className="w-full">
+                "로그인"
               </Button>
             </div>
           </form>

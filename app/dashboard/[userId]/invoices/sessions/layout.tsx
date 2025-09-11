@@ -1,5 +1,4 @@
 import "@/app/ui/global.css";
-import { cookies } from "next/headers";
 import Link from "next/link";
 
 type LayoutProps = {
@@ -8,12 +7,11 @@ type LayoutProps = {
 };
 
 const SessionsList = async ({ userId }: { userId: string }) => {
-  const cookieHeader = (await cookies()).toString();
   const dataResponse = await fetch(
-    `${process.env.NEXT_PUBLIC_DESEKER_SERVER_URL}/api/dashboard/sessions`,
-    { headers: { cookie: cookieHeader }, cache: "no-store" }
+    `${process.env.NEXT_PUBLIC_DESEKER_SERVER_URL}/api/dashboard/sessions?userId=${userId}`
   );
-  const { data } = await dataResponse.json();
+  const data = await dataResponse.json();
+  console.log(data);
   const chatSessions: any[] = Array.isArray(data) ? data : [];
 
   return (
@@ -25,9 +23,9 @@ const SessionsList = async ({ userId }: { userId: string }) => {
       <div className="flex grow flex-col overflow-y-auto">
         <ul className="space-y-2">
           {chatSessions.map((session: any) => (
-            <li key={session.sessionId}>
+            <li key={session.id}>
               <Link
-                href={`/dashboard/${userId}/invoices/sessions/${session.sessionId}/messages`}
+                href={`/dashboard/${userId}/invoices/sessions/${session.id}/messages`}
                 className="block rounded-md border border-gray-200 bg-white p-3 hover:bg-gray-100 text-sm"
               >
                 {new Date(session.createdAt).toLocaleString()}
