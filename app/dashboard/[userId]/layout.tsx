@@ -1,26 +1,35 @@
 import "@/app/ui/global.css";
-import SideBar from "@/app/ui/dashboard/side-bar";
-import SideNavBar from "@/app/ui/dashboard/side-nav-bar";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
 
-type LayoutProps = {
-  params: { userId: string };
-  children: React.ReactNode;
-};
-
-const Layout = async ({ params, children }: LayoutProps) => {
-  const { userId } = await params;
+const Layout = async () => {
   return (
-    <div className="flex h-screen flex-row overflow-hidden">
-      <div className="flex h-full">
-        <div className="w-28 flex-none">
-          <SideBar userId={userId} />
-        </div>
-        <div className="w-64 flex-none border-l border-brown-200">
-          <SideNavBar userId={userId} />
-        </div>
-      </div>
-      <div className="flex-grow p-4 md:p-5">{children}</div>
-    </div>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "4.5rem",
+        } as React.CSSProperties
+      }
+    >
+      <Sidebar className="border-r border-borderdestructive-foreground">
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu className="flex flex-col gap-8 pt-swbu9">
+                <SidebarMenuItem className="flex justify-center"></SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    </SidebarProvider>
   );
 };
 
