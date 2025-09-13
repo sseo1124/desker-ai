@@ -61,11 +61,11 @@ const Layout = async ({ params }: LayoutProps) => {
         } as React.CSSProperties
       }
     >
-      <Sidebar className="border-r border-borderdestructive-foreground">
+      <Sidebar className="border-r border-foreground">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
-              <SidebarMenu className="flex flex-col gap-8 pt-swbu9">
+              <SidebarMenu className="flex flex-col gap-8 pt-9">
                 {items.map((item) => (
                   <SidebarMenuItem
                     key={item.title}
