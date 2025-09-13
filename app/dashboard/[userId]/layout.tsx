@@ -19,7 +19,13 @@ import {
 import { MessageCircleMore, ContactRound, Bot, UserCog } from "lucide-react";
 import { SIDE_BAR_TOOLTIP_MESSAGE } from "@/config/constants";
 
-const Layout = async () => {
+type LayoutProps = {
+  params: { userId: string };
+  children: React.ReactNode;
+};
+
+const Layout = async ({ params }: LayoutProps) => {
+  const { userId } = await params;
   const items = [
     {
       title: "MessageCircleMore",
