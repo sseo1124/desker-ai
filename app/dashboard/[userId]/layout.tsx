@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { MessageCircleMore, ContactRound, Bot, UserCog } from "lucide-react";
+import { SIDE_BAR_TOOLTIP_MESSAGE } from "@/config/constants";
 
 const Layout = async () => {
   const items = [
@@ -17,25 +18,25 @@ const Layout = async () => {
       title: "MessageCircleMore",
       url: `/dashboard/${userId}/invoices/sessions`,
       icon: MessageCircleMore,
-      text: "대화 목록",
+      text: SIDE_BAR_TOOLTIP_MESSAGE.SESSIONS_LIST,
     },
     {
       title: "ContactRound",
       url: `/dashboard/${userId}/invoices/inquiries`,
       icon: ContactRound,
-      text: "방문자 연락처",
+      text: SIDE_BAR_TOOLTIP_MESSAGE.VISITOR_CONTACT,
     },
     {
       title: "Bot",
       url: `/dashboard/${userId}/chatbot/setting`,
       icon: Bot,
-      text: "AI 설정",
+      text: SIDE_BAR_TOOLTIP_MESSAGE.AI_SETTING,
     },
     {
       title: "UserCog",
       url: `/dashboard/${userId}/user/setting`,
       icon: UserCog,
-      text: "개인 설정",
+      text: SIDE_BAR_TOOLTIP_MESSAGE.PERSONAL_SETTINGS,
     },
   ];
 
