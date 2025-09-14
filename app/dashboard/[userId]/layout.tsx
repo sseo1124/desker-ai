@@ -74,7 +74,7 @@ const Layout = ({ params, children }: LayoutProps) => {
         } as React.CSSProperties
       }
     >
-      <div className="flex h-screen">
+      <div className="flex h-screen w-full">
         <Sidebar className="border-r border-foreground">
           <SidebarContent>
             <SidebarGroup>
