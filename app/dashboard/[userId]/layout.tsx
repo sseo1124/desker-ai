@@ -24,7 +24,7 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-const Layout = ({ params }: LayoutProps) => {
+const Layout = ({ params, children }: LayoutProps) => {
   const { userId } = params;
   const items = [
     {
@@ -61,33 +61,36 @@ const Layout = ({ params }: LayoutProps) => {
         } as React.CSSProperties
       }
     >
-      <Sidebar className="border-r border-foreground">
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu className="flex flex-col gap-8 pt-9">
-                {items.map((item) => (
-                  <SidebarMenuItem
-                    key={item.title}
-                    className="flex justify-center"
-                  >
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Link href={item.url}>
-                          <item.icon className="h-8 w-8 text-sidebar-foreground" />
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" sideOffset={10}>
-                        <p className="text-sm">{item.text}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
+      <div className="flex h-screen">
+        <Sidebar className="border-r border-foreground">
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu className="flex flex-col gap-8 pt-9">
+                  {items.map((item) => (
+                    <SidebarMenuItem
+                      key={item.title}
+                      className="flex justify-center"
+                    >
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Link href={item.url}>
+                            <item.icon className="h-8 w-8 text-sidebar-foreground" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" sideOffset={10}>
+                          <p className="text-sm">{item.text}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+        <main className="flex-1 overflow-y-auto">{children}</main>
+      </div>
     </SidebarProvider>
   );
 };
