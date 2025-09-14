@@ -1,3 +1,5 @@
+"use client";
+
 import "@/app/ui/global.css";
 import Link from "next/link";
 import {
@@ -18,14 +20,18 @@ import {
 
 import { MessageCircleMore, ContactRound, Bot, UserCog } from "lucide-react";
 import { SIDE_BAR_TOOLTIP_MESSAGE } from "@/config/constants";
+import DescriptionBar from "@/app/ui/dashboard/description-header-bar";
+import { usePathname } from "next/navigation";
+import { use } from "react";
 
 type LayoutProps = {
-  params: { userId: string };
+  params: Promise<{ userId: string }>;
   children: React.ReactNode;
 };
 
 const Layout = ({ params, children }: LayoutProps) => {
-  const { userId } = params;
+  const { userId } = use(params);
+  const pathname = usePathname();
   const items = [
     {
       title: "MessageCircleMore",
@@ -89,7 +95,18 @@ const Layout = ({ params, children }: LayoutProps) => {
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto">
+          {items
+            .filter((item) => pathname.startsWith(item.url))
+            .map((item) => (
+              <DescriptionBar
+                key={item.title}
+                icon={item.icon}
+                text={item.text}
+              />
+            ))}
+          {children}
+        </main>
       </div>
     </SidebarProvider>
   );
