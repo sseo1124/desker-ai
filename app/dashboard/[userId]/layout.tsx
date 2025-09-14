@@ -24,8 +24,8 @@ type LayoutProps = {
   children: React.ReactNode;
 };
 
-const Layout = async ({ params }: LayoutProps) => {
-  const { userId } = await params;
+const Layout = ({ params }: LayoutProps) => {
+  const { userId } = params;
   const items = [
     {
       title: "MessageCircleMore",
