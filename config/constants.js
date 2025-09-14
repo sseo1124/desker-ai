@@ -50,3 +50,14 @@ export const SIDE_BAR_TOOLTIP_MESSAGE = {
   AI_SETTING: "AI 설정",
   PERSONAL_SETTINGS: "개인 설정",
 };
+
+export const HEADER_BAR_DEATAIL_MESSAGE = {
+  SESSIONS_LIST:
+    "방문자와 나눈 모든 대화 세션을 확인할 수 있습니다. 필요한 세션을 선택해 상세 메시지를 열람하세요.",
+  VISITOR_CONTACT:
+    "방문자가 남긴 문의와 연락처 정보를 관리할 수 있습니다. 빠른 대응을 위해 연락처 정보를 확인하세요.",
+  AI_SETTING:
+    "AI 챗봇의 관련 설정을 할 수 있습니다. URL을 등록해 챗봇이 최신 정보를 학습하도록 설정해 보세요.",
+  PERSONAL_SETTINGS:
+    "계정과 사용자 정보를 관리할 수 있습니다. 개인 설정을 조정하세요.",
+};
