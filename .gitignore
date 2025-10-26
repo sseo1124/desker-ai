@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
+/public/chatbot-widget/widget.css
+/public/chatbot-widget/widget.js

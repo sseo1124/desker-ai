@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+// --- ENUM 타입 정의 ---
+enum PROCESSING_STATUS {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum MESSAGE_SENDER {
+  AI
+  VISITOR
+}
+
+enum FEEDBACK_RESULT {
+  HELPFUL
+  UNHELPFUL
+}
+
+enum INQUIRY_STATUS {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+// --- 테이블 모델 정의 ---
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  phoneNumber  String   @map("phone_number")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  chatbots     Chatbot[]
+}
+
+model Chatbot {
+  id                String            @id @default(cuid())
+  userId            String            @map("user_id")
+  name              String?            @db.VarChar(120)
+  roleDesc          String?           @db.VarChar(1000) @map("role_desc")
+  keywordReplyRules String?           @db.VarChar(800) @map("keyword_reply_rules")
+  conversationRules String?           @db.VarChar(800) @map("conversation_rules")
+  companyUrl        String?            @map("company_url")
+  indexStatus       PROCESSING_STATUS @default(PENDING) @map("index_status")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  owner             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatSessions      ChatSession[]
+  inquiries         Inquiry[]
+
+  @@index([userId])
+}
+
+model ChatSession {
+  id        String   @id @default(cuid())
+  botId     String   @map("bot_id")
+  visitorId String   @db.VarChar(128) @map("visitor_id")
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  bot       Chatbot     @relation(fields: [botId], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+  inquiries Inquiry[]
+
+  @@index([botId])
+}
+
+model ChatMessage {
+  id             String           @id @default(cuid())
+  sessionId      String           @map("session_id")
+  sender         MESSAGE_SENDER
+  senderKey      String?          @db.VarChar(128) @map("sender_key")
+  content        String?
+  feedbackResult FEEDBACK_RESULT? @map("feedback_result")
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  session        ChatSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
+model Inquiry {
+  id          String         @id @default(cuid())
+  botId       String         @map("bot_id")
+  sessionId   String?        @map("session_id")
+
+  name        String         @db.VarChar(120)
+  companyName String?        @db.VarChar(255) @map("company_name")
+  phoneNumber String         @db.VarChar(32) @map("phone_number")
+  email       String?        @db.VarChar(255)
+  message     String
+  status      INQUIRY_STATUS @default(UNREAD)
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  bot         Chatbot        @relation(fields: [botId], references: [id], onDelete: Cascade)
+  session     ChatSession?   @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([botId])
+  @@index([sessionId])
+}
