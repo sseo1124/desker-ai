@@ -1,26 +1,21 @@
-import "@/app/ui/global.css";
-import SideBar from "@/app/ui/dashboard/side-bar";
-import SideNavBar from "@/app/ui/dashboard/side-nav-bar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import SideBarShell from "@/app/ui/dashboard/side-bar-shell";
 
 type LayoutProps = {
-  params: { userId: string };
+  params: Promise<{ userId: string }>;
   children: React.ReactNode;
 };
 
 const Layout = async ({ params, children }: LayoutProps) => {
   const { userId } = await params;
+
   return (
-    <div className="flex h-screen flex-row overflow-hidden">
-      <div className="flex h-full">
-        <div className="w-28 flex-none">
-          <SideBar userId={userId} />
-        </div>
-        <div className="w-64 flex-none border-l border-brown-200">
-          <SideNavBar userId={userId} />
-        </div>
-      </div>
-      <div className="flex-grow p-4 md:p-5">{children}</div>
-    </div>
+    <SidebarProvider
+      defaultOpen={true}
+      style={{ "--sidebar-width": "4.5rem" } as React.CSSProperties}
+    >
+      <SideBarShell userId={userId}>{children}</SideBarShell>
+    </SidebarProvider>
   );
 };
 
