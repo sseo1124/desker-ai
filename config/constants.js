@@ -43,3 +43,10 @@ export const ERROR_MESSAGE = {
 export const SUCCESS_MESSAGE = {
   MESSAGE_FETCH: "대화 조회하였습니다.",
 };
+
+export const SIDE_BAR_TOOLTIP_MESSAGE = {
+  SESSIONS_LIST: "대화 목록",
+  VISITOR_CONTACT: "방문자 연락처",
+  AI_SETTING: "AI 설정",
+  PERSONAL_SETTINGS: "개인 설정",
+};
